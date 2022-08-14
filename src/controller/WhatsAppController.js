@@ -1,4 +1,8 @@
-class WhatsAppController {
+import {Format} from './../utils/Format';
+import {CameraController} from './cameraController';
+
+
+export class WhatsAppController {
 
     constructor() {
 
@@ -194,16 +198,20 @@ class WhatsAppController {
         this.el.btnAttachCamera.on('click', e => {
 
             this.closeAllMainPanel();
+            console.log('botao camera')
             this.el.panelCamera.addClass('open');
             this.el.panelCamera.css({
                 'height': 'calc(100% - 120px)'
             });
+
+            this._camera = new CameraController(this.el.videoCamera);
         });
 
         this.el.btnClosePanelCamera.on('click', e => {
 
             this.closeAllMainPanel();
             this.el.panelMessagesContainer.show();
+            this._camera.stop();
         })
 
         this.el.btnAttachDocument.on('click', e => {
