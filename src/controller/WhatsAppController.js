@@ -1,5 +1,6 @@
-import {Format} from './../utils/Format';
-import {CameraController} from './cameraController';
+import { Format } from './../utils/Format';
+import { CameraController } from './cameraController';
+import { DocumentPreviewController } from './DocumentPreviewController';
 
 
 export class WhatsAppController {
@@ -214,9 +215,9 @@ export class WhatsAppController {
             this._camera.stop();
         });
 
-        this.el.btnTakePicture.on('click', e=>{
+        this.el.btnTakePicture.on('click', e => {
 
-            let dataUrl =  this._camera.takePicture();
+            let dataUrl = this._camera.takePicture();
 
             this.el.pictureCamera.src = dataUrl;
             this.el.pictureCamera.show();
@@ -227,7 +228,7 @@ export class WhatsAppController {
 
         });
 
-        this.el.btnReshootPanelCamera.on('click', e=>{
+        this.el.btnReshootPanelCamera.on('click', e => {
 
             this.el.pictureCamera.hide();
             this.el.videoCamera.show();
@@ -236,7 +237,7 @@ export class WhatsAppController {
             this.el.containerSendPicture.hide();
         });
 
-        this.el.btnSendPicture.on('click', e=>{
+        this.el.btnSendPicture.on('click', e => {
 
             console.log(this.el.pictureCamera.src);
         })
@@ -248,6 +249,68 @@ export class WhatsAppController {
             this.el.panelDocumentPreview.css({
                 'height': 'calc(100% - 120px)'
             });
+            this.el.inputDocument.click();
+        });
+
+        this.el.inputDocument.on('change', e => {
+
+            if (this.el.inputDocument.files.length) {
+
+                this.el.panelDocumentPreview.css({
+
+                    'height': '1%'
+                });
+
+                let file = this.el.inputDocument.files[0];
+
+                this._documentPreviewController = new DocumentPreviewController(file);
+
+                this._documentPreviewController.getPreviewData().then(result => {
+
+
+                    this.el.imgPanelDocumentPreview.src = result.src;
+                    this.el.infoPanelDocumentPreview.innerHTML = result.info;
+                    this.el.imagePanelDocumentPreview.show();
+                    this.el.filePanelDocumentPreview.hide();
+
+                    this.el.panelDocumentPreview.css({
+
+                        'height': 'calc(100% - 120px)'
+                    });
+
+                }).catch(err => {
+
+                    this.el.panelDocumentPreview.css({
+
+                        'height': 'calc(100% - 120px)'
+                    });
+
+                    switch (file.type) {
+                        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                        case 'application/msword':
+                            this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-doc';
+                            break;
+
+                        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                        case 'application/vnd.ms-excel':
+                            this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-xls';
+                            break;
+
+                        case 'application/vnd.ms-powerpoint':
+                        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                            this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-ppt';
+                            break;
+
+                        default:
+                            this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-generic';
+                    }
+
+
+                    this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+                    this.el.imagePanelDocumentPreview.hide();
+                    this.el.filePanelDocumentPreview.show();
+                });
+            }
         });
 
         this.el.btnClosePanelDocumentPreview.on('click', e => {
@@ -288,9 +351,9 @@ export class WhatsAppController {
             this.closeRecordMicrophone();
         });
 
-        this.el.inputText.on('keypress', e=>{
+        this.el.inputText.on('keypress', e => {
 
-            if(e.key === 'Enter'){
+            if (e.key === 'Enter') {
 
                 e.preventDefault();
                 this.el.btnSend.click();
@@ -312,19 +375,19 @@ export class WhatsAppController {
             }
         });
 
-        this.el.btnSend.on('click', e=>{
+        this.el.btnSend.on('click', e => {
 
             console.log(this.el.inputText.innerHTML);
         });
 
-        this.el.btnEmojis.on('click', e=>{
+        this.el.btnEmojis.on('click', e => {
 
             this.el.panelEmojis.toggleClass('open');
         });
 
-        this.el.panelEmojis.querySelectorAll('.emojik').forEach(emoji=>{
+        this.el.panelEmojis.querySelectorAll('.emojik').forEach(emoji => {
 
-            emoji.on('click', e=>{
+            emoji.on('click', e => {
 
                 console.log(emoji.dataset.unicode);
 
@@ -334,13 +397,13 @@ export class WhatsAppController {
                 img.dataset.unicode = emoji.dataset.unicode;
                 img.alt = emoji.dataset.unicode;
 
-                emoji.classList.forEach(name=>{
+                emoji.classList.forEach(name => {
                     img.classList.add(name)
                 });
 
                 let cursor = window.getSelection();
 
-                if(!cursor.focusNode || !cursor.focusNode.id == 'input-text'){
+                if (!cursor.focusNode || !cursor.focusNode.id == 'input-text') {
 
                     this.el.inputText.focus();
                     cursor.window.getSelection();
@@ -361,7 +424,7 @@ export class WhatsAppController {
             });
         });
 
-        
+
 
 
     }
